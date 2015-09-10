@@ -361,7 +361,7 @@ table.price-table .matched-header {
         transform: translateX(0)
     }
     100% {
-        transform: translateX(-800px)
+        transform: translateX(-1000px)
     }
 }
 
@@ -370,7 +370,7 @@ table.price-table .matched-header {
         -webkit-transform: translateX(0)
     }
     100% {
-        -webkit-transform: translateX(-800px)
+        -webkit-transform: translateX(-1000px)
     }
 }
 
@@ -451,8 +451,20 @@ table.price-table .matched-header {
     top: 45px;
     -webkit-transform: translate3d(0, 0, 0);
     width: 65px;
-    width: 100%;
     z-index: 2;
+    -webkit-transform-style: preserve-3d
+}
+
+.simulator-content .logo {
+    background: #ffb80c url("../images/logo.png") no-repeat;
+    height: 48px;
+    left: 850px;
+    position: absolute;
+    border: solid #1e1e1e 1px;
+    top: 65px;
+    -webkit-transform: translate3d(0, 0, 0);
+    width: 112px;
+    z-index: 3;
     -webkit-transform-style: preserve-3d
 }
 
@@ -1219,6 +1231,26 @@ text.axis-worktime {
 
 .saddlecloth-8, .saddlecloth-16,  .saddlecloth-24 {
     background-color: #B27692
+}
+
+.simulator .finish-logo {
+    background: #ffb80c url("../images/logo.png") no-repeat;
+    height: 48px;
+    position: absolute;
+    right: -115px;
+    border: solid #1e1e1e 1px;
+    top: 65px;
+    width: 112px;
+    z-index: 3;
+}
+
+.simulator .finish-logo.arrive {
+    right: 5px;
+    transition: right 250ms linear;
+    -moz-transition: right 250ms linear;
+    -ms-transition: right 250ms linear;
+    -o-transition: right 250ms linear;
+    -webkit-transition: right 250ms linear
 }
 
 .simulator .finish-line {

@@ -13,9 +13,8 @@
               <div class=race-msg ng-show=!market.settlement>
                 <div class=tto-msg>
                   <span ng-show="market.state=='STARTED'">Time to Jump {{market.timeToOff | date:'mm:ss'}}</span>
-                  <div class=race-distance ng-show="market.state=='INPLAY'">
-                    <span class=distance-label>Distance</span>
-                    <span class=distance-value>{{market.pctRace}}%</span>
+                  <div class=race-distance>
+                    <span class=distance-value><span ng-show="market.state=='INPLAY'">{{market.pctRace * market.distance / 100}}m of </span>{{market.distance}}m</span>
                   </div>
                 </div>
               </div>
@@ -31,6 +30,8 @@
                 <div class=cloud2 ng-class="{'move-environment-slow': isEnvInMotion}"></div>
               </div>
               <div class=tree ng-class="{'move-environment-quick': isEnvInMotion}"></div>
+              <div class="logo" ng-class="{'move-environment-quick': isEnvInMotion}"></div>
+              <div class="finish-logo" ng-class="{'arrive': market.pctRace === 100}"></div>
               <div class=background ng-class="{'move-environment': isEnvInMotion}"></div>
               <div class=horseList>
                 <div class="horse stall" ng-class="{'stall-animation': isEnvInMotion}" ng-attr-style="z-index: 0; right: {{stallPosition}}%;" ng-show="market.runners.length > 0"></div>
@@ -58,7 +59,7 @@
                 <button class="btn btn-goto-start" ng-disabled=isBtnSkipToStartDisabled() ng-click=skipToStart()>Start Race</button>
               </div>
               <div class=btn-container-goto-end ng-disabled=isBtnSkipToEndDisabled()>
-                <button class="btn btn-goto-end" ng-disabled=isBtnSkipToEndDisabled() ng-click=skipToEnd()>Last 200m</button>
+                <button class="btn btn-goto-end" ng-disabled=isBtnSkipToEndDisabled() ng-click=skipToEnd()>Last {{0.02 * market.distance}}m</button>
               </div>
               <div class=btn-container-newrace><button class="btn nr-button" ng-click=restart()>New Race</button></div>
             </div>

@@ -454,12 +454,14 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
   }
   function d() {
     loadRace(function(b) {
-        var raceLengths = [1000, 1200, 1400, 1700, 1800, 2200, 2800];
+        var raceLengths = [1000, 1200, 1400, 1700, 1800, 2200, 2800], maxPoints = 400,
+          divisor = maxPoints / raceLengths.length,
+          points = (b.iterator.l || []).filter(function(point) {
+              return point.state === 'INPLAY';
+            }).length,
+          index = Math.floor(points / divisor) - 1;
         a.market = b,
-          a.market.distance = (b.iterator.l || []).filter(function(point) {
-            return point.state === 'INPLAY';
-          }).length,
-          console.log(a.market.distance),
+          a.market.distance = raceLengths[Math.min(index, raceLengths.length - 1)],
           o(),
           a.$apply()
       }
