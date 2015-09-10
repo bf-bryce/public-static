@@ -1,0 +1,301 @@
+<div ng-app="betsim">
+  <link rel=stylesheet href=assets/styles/app.css>
+  <link rel=stylesheet href=assets/styles/simulator.css>
+  <div class=page-content>
+    <div class="page-wrapper page-wrapper-simulator">
+      <div ng-controller=appCtrl>
+        <div class=loading ng-cloak>
+          <div class=loading-image ng-cloak></div>
+        </div>
+        <div class=bodyContent ng-cloak>
+          <div class=simulator>
+            <div id=content class="panel simulator-content">
+              <div class=race-msg ng-show=!market.settlement>
+                <div class=tto-msg>
+                  <span ng-show="market.state=='STARTED'">Time to Jump {{market.timeToOff | date:'mm:ss'}}</span>
+                  <div class=race-distance ng-show="market.state=='INPLAY'">
+                    <span class=distance-label>Distance</span>
+                    <span class=distance-value>{{market.pctRace}}%</span>
+                  </div>
+                </div>
+              </div>
+              <div class=settlement-splash ng-class="{'show': market.settlement}">
+                <div class=settlement-msg>
+                  <span>{{market.settlement.winner}} won the race</span>
+                  <br>
+                  <span>Your profit was ${{market.settlement.profit | number:2}}</span>
+                </div>
+              </div>
+              <div class=sky>
+                <div class=cloud1 ng-class="{'move-environment-very-slow': isEnvInMotion}"></div>
+                <div class=cloud2 ng-class="{'move-environment-slow': isEnvInMotion}"></div>
+              </div>
+              <div class=tree ng-class="{'move-environment-quick': isEnvInMotion}"></div>
+              <div class=background ng-class="{'move-environment': isEnvInMotion}"></div>
+              <div class=horseList>
+                <div class="horse stall" ng-class="{'stall-animation': isEnvInMotion}" ng-attr-style="z-index: 0; right: {{stallPosition}}%;" ng-show="market.runners.length > 0"></div>
+                <div class=horse ng-class="{horseanimation: playing}" ng-repeat="runner in market.runners" ng-attr-style="z-index: {{$index}}; top: {{$index*(300 / market.runners.length)+118}}px; right: {{runner.displayPosition}}%;">
+                  <horse-runner playing=playing is-horse-in-motion=isHorseInMotion id={{::runner.selectionId}} horse-id={{::runner.selectionId}} horse-position={{runner.displayPosition}} horse-saddle={{::runner.saddleCloth}} horse-odd={{runner.displayPrice}}></horse-runner>
+                </div>
+                <div class="horse stall" ng-class="{'stall-animation': isEnvInMotion}" ng-repeat="runner in market.runners" ng-attr-style="z-index: {{$index}}; top: {{$index*(300 / market.runners.length) + ((300 / market.runners.length)/2) + 118}}px; right: {{stallPosition}}%;"></div>
+              </div>
+              <div class=finish-line ng-class="{'arrive': market.pctRace === 100}"></div>
+            </div>
+            <div id=controls>
+              <div class=btn-container ng-disabled=isBtnPlayDisabled()>
+                <div class=btn-tooltip-container>
+                  <div class=btn-tooltip>Play</div>
+                </div>
+                <button class="btn btn-sprite btn-play" ng-disabled=isBtnPlayDisabled() ng-click=play()></button>
+              </div>
+              <div class=btn-container ng-disabled=isBtnPauseDisabled()>
+                <div class=btn-tooltip-container>
+                  <div class=btn-tooltip>Pause</div>
+                </div>
+                <button class="btn btn-sprite btn-pause" ng-disabled=isBtnPauseDisabled() ng-click=pause()></button>
+              </div>
+              <div class=btn-container-goto-start ng-disabled=isBtnSkipToStartDisabled()>
+                <button class="btn btn-goto-start" ng-disabled=isBtnSkipToStartDisabled() ng-click=skipToStart()>Start Race</button>
+              </div>
+              <div class=btn-container-goto-end ng-disabled=isBtnSkipToEndDisabled()>
+                <button class="btn btn-goto-end" ng-disabled=isBtnSkipToEndDisabled() ng-click=skipToEnd()>Last 200m</button>
+              </div>
+              <div class=btn-container-newrace><button class="btn nr-button" ng-click=restart()>New Race</button></div>
+            </div>
+          </div>
+          <div class=right-column>
+            <div class=market-view-container>
+              <div class="splash price-splash" ng-show="market.state=='CLOSED'">
+                <div class=price-splash-message>Betting suspended</div>
+              </div>
+              <table class=price-table>
+                <tr>
+                  <th colspan=7 class=th-no-padding>
+                    <div class=matched-header>
+                      <div class=inplay-container>
+                        <div ng-show="market.state=='INPLAY'">
+                          <div class=is-inplay-icon></div>
+                          <div class=inplay-label>In-play</div>
+                        </div>
+                        <div ng-show="!(market.state=='INPLAY')">
+                          <div class=going-inplay-icon></div>
+                          <div class=going-inplay-label>Going In-play</div>
+                        </div>
+                      </div>
+                      <div class=matched-container>
+                        <div class=matched-label>Matched: ${{market.tv | number:0}}</div>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+                <tr>
+                  <th class=left>{{market.runners.length}} selections</th>
+                  <th colspan=2 class=left>{{100*market.atbBook | number:2}}%</th>
+                  <th class=back-header>Bet For</th>
+                  <th class=lay-header>Bet Against</th>
+                  <th colspan=2 class=right>{{100*market.atlBook | number:2}}%</th>
+                </tr>
+                <tr ng-repeat="runner in market.runners">
+                  <td class=runner-name-cell ng-class="{'runner-name-cell-first': $index == 0}">
+                    <div class=saddlecloth ng-class="'{{::'saddlecloth-' + runner.saddleCloth}}'">{{::runner.saddleCloth}}</div>
+                    <!--
+                      -->
+                    <div class=runner-name>{{runner.name}}</div>
+                    <br><span ng-show=market.mp.hasMatchedPosition pandl=runner.rp.netMatchedProfitIfWin></span> <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">»</span> <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets" pandl=runner.rp.netProfitIfWin></span>
+                  </td>
+                  <td class="price-cell price-cell-first peripheral-price" ng-click="back(runner, runner.atb[2].price)">
+                        <span title={{runner.atb[2].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atb[2])>
+                          <div ng-show=runner.atb[2].price>
+                            <div class=odd>{{runner.atb[2].price}}</div>
+                            <div class=prices>${{runner.atb[2].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                  <td class="price-cell peripheral-price" ng-click="back(runner, runner.atb[1].price)">
+                        <span title={{runner.atb[1].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atb[1])>
+                          <div ng-show=runner.atb[1].price>
+                            <div class=odd>{{runner.atb[1].price}}</div>
+                            <div class=prices>${{runner.atb[1].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                  <td class="price-cell back" ng-click="back(runner, runner.atb[0].price)">
+                        <span title={{runner.atb[0].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atb[0])>
+                          <div ng-show=runner.atb[0].price>
+                            <div class=odd>{{runner.atb[0].price}}</div>
+                            <div class=prices>${{runner.atb[0].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                  <td class="price-cell lay" ng-click="lay(runner, runner.atl[0].price)">
+                        <span title={{runner.atl[0].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atl[0])>
+                          <div ng-show=runner.atl[0].price>
+                            <div class=odd>{{runner.atl[0].price}}</div>
+                            <div class=prices>${{runner.atl[0].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                  <td class="price-cell peripheral-price" ng-click="lay(runner, runner.atl[1].price)">
+                        <span title={{runner.atl[1].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atl[1])>
+                          <div ng-show=runner.atl[1].price>
+                            <div class=odd>{{runner.atl[1].price}}</div>
+                            <div class=prices>${{runner.atl[1].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                  <td class="price-cell peripheral-price" ng-click="lay(runner, runner.atl[2].price)">
+                        <span title={{runner.atl[2].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atl[2])>
+                          <div ng-show=runner.atl[2].price>
+                            <div class=odd>{{runner.atl[2].price}}</div>
+                            <div class=prices>${{runner.atl[2].size | number:0}}</div>
+                          </div>
+                        </span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class=betslip-container>
+              <div id=betslip>
+                <div class=tab-header>
+                  <div class=tab ng-class="{'tab-selected': betslipState=='PLACE'}" ng-click="betslipState='PLACE'">Place bets</div>
+                  <div class=tab ng-class="{'tab-selected': betslipState=='OPENBETS'}" ng-click="betslipState='OPENBETS'">Open bets</div>
+                </div>
+                <div ng-show="betslipState=='PLACE'" class=betslip-content ng-keypress="($event.keyCode == 13) && market.mp.isPlaceable && confirmPlacement()">
+                  <div ng-show=market.mp.hasValidationErrors class=invalid>Your back odds cannot be less than or equal to your lay odds on the same selection.</div>
+                  <div ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">
+                    <span class="bets-header current-bets-header">Current odds bets</span>
+                  </div>
+                  <span class=selection-text ng-show="!market.mp.hasPotentialBackBets && !market.mp.hasPotentialLayBets">
+                    <h5 class=betslip-market-type>Win Only</h5>
+                    <span>Click on the odds to add selections to the betslip.</span>
+                  </span>
+                  <table class="betslip betslip-table" cellspacing=0 ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">
+                    <tbody class=back-light ng-show=market.mp.hasPotentialBackBets>
+                    <tr class=back-dark>
+                      <th class="left betslip-header-cell">Back (Bet for)</th>
+                      <th>Your<br>Odds</th>
+                      <th>Your<br>Stake</th>
+                      <th>Your<br>Profit</th>
+                    </tr>
+                    <tr ng-repeat="runner in market.runners" ng-show="runner.rp.potentialBackBet!=null">
+                      <td class=runner-name-cell><button class=cancel-button ng-click=cancelBet(runner.rp.potentialBackBet);></button> <span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center><span class=price-input-cell><input price-input class=price-input id=price_{{runner.rp.potentialBackBet.idx}} ng-model=runner.rp.potentialBackBet.price ng-change=recalcPotentials() ng-class="{'invalid':runner.rp.potentialBackBet.hasPriceError}" tabindex={{runner.rp.potentialBackBet.idx}}></span></td>
+                      <td class=center><input stake-input class=stake-input ng-model=runner.rp.potentialBackBet.size ng-change=recalcPotentials() tabindex={{runner.rp.potentialBackBet.idx}}></td>
+                      <td class=center><span ng-show=runner.rp.potentialBackBet.isComputable()>${{runner.rp.potentialBackBet.whatIfProfitIfWin | number:2}}</span></td>
+                    </tr>
+                    </tbody>
+                    <tbody class=lay-light ng-show=market.mp.hasPotentialLayBets>
+                    <tr class=lay-dark>
+                      <th class="left betslip-header-cell">Lay (Bet against)</th>
+                      <th>Backer's<br>Odds</th>
+                      <th>Backer's<br>Stake</th>
+                      <th class="left betslip-header-cell"><span class=options><input type=radio class=checkbox ng-model=options.layBetPayoutLiability value=payout><label>Payout</label></span> <span class=options><input type=radio class=checkbox ng-model=options.layBetPayoutLiability value=liability><label>Liability</label></span></th>
+                    </tr>
+                    <tr ng-repeat="runner in market.runners" ng-show="runner.rp.potentialLayBet!=null">
+                      <td class=runner-name-cell><button class=cancel-button ng-click=cancelBet(runner.rp.potentialLayBet);></button> <span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center><span class=price-input-cell><input price-input class=price-input id=price_{{runner.rp.potentialLayBet.idx}} ng-model=runner.rp.potentialLayBet.price ng-change=recalcPotentials() ng-class="{'invalid':runner.rp.potentialLayBet.hasPriceError}" tabindex={{runner.rp.potentialLayBet.idx}}></span></td>
+                      <td class=center><input stake-input class=stake-input ng-model=runner.rp.potentialLayBet.size ng-change=recalcPotentials() tabindex={{runner.rp.potentialLayBet.idx}}></td>
+                      <td class=center><span ng-show="runner.rp.potentialLayBet.isComputable() && options.layBetPayoutLiability=='liability'">${{runner.rp.potentialLayBet.liability | number:2}}</span><span ng-show="runner.rp.potentialLayBet.isComputable() && options.layBetPayoutLiability=='payout'">${{runner.rp.potentialLayBet.payout | number:2}}</span></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <div class=betslip-footer ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">
+                    <div class=liability>
+                      <div><span>Liability:</span> <span class=liability-value>${{-market.mp.exposure | number:2}}</span></div>
+                    </div>
+                    <button class=betslip-submit-btn ng-click=confirmPlacement() ng-disabled=!market.mp.isPlaceable tabindex={{placeButtonIdx}}>Place bets</button>
+                  </div>
+                </div>
+                <div ng-show="betslipState=='OPENBETS'" class=betslip-content>
+                  <table class="betslip betslip-table" cellspacing=0 ng-show="market.mp.hasUnmatchedBacks || market.mp.hasUnmatchedLays">
+                    <tbody>
+                    <tr class=grey>
+                      <th colspan=4 class=bets-header>Unmatched bets</th>
+                    </tr>
+                    </tbody>
+                    <tbody class=back-light ng-show=market.mp.hasUnmatchedBacks>
+                    <tr class=back-dark>
+                      <th class="left betslip-header-cell">Back (Bet for)</th>
+                      <th>Your<br>Odds</th>
+                      <th>Your<br>Stake</th>
+                      <th>Your<br>Profit</th>
+                    </tr>
+                    </tbody>
+                    <tbody ng-repeat="runner in market.runners" ng-show=runner.rp.hasUnmatchedBacks>
+                    <tr ng-repeat="bet in runner.unmatchedBets" class=back-light ng-show="bet.side=='BACK'">
+                      <td class=runner-name-cell><button class=cancel-button ng-click="cancelUnmatchedBet(runner, bet);"></button> <span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center>{{bet.price}}</td>
+                      <td class=center>${{bet.size | number:2}}</td>
+                      <td class=center>${{(bet.price-1)*bet.size | number:2}}</td>
+                    </tr>
+                    </tbody>
+                    <tbody class=lay-light ng-show=market.mp.hasUnmatchedLays>
+                    <tr class=lay-dark>
+                      <th class="left betslip-header-cell">Lay (Bet against)</th>
+                      <th>Backer's<br>Odds</th>
+                      <th>Backer's<br>Stake</th>
+                      <th>Your<br>Liability</th>
+                    </tr>
+                    </tbody>
+                    <tbody ng-repeat="runner in market.runners" ng-show=runner.rp.hasUnmatchedLays>
+                    <tr ng-repeat="bet in runner.unmatchedBets" class=lay-light ng-show="bet.side=='LAY'">
+                      <td class=runner-name-cell><button class=cancel-button ng-click="cancelUnmatchedBet(runner, bet);"></button> <span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center>{{bet.price}}</td>
+                      <td class=center>${{bet.size | number:2}}</td>
+                      <td class=center>${{(bet.price-1)*bet.size | number:2}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <table class="betslip betslip-table" cellspacing=0 ng-show="market.mp.hasMatchedBacks || market.mp.hasMatchedLays">
+                    <tbody>
+                    <tr class=grey>
+                      <th colspan=4 class=bets-header>Matched bets</th>
+                    </tr>
+                    </tbody>
+                    <tbody class=back-light ng-show=market.mp.hasMatchedBacks>
+                    <tr class=back-dark>
+                      <th class="left betslip-header-cell">Back (Bet for)</th>
+                      <th>Your<br>Odds</th>
+                      <th>Your<br>Stake</th>
+                      <th>Your<br>Profit</th>
+                    </tr>
+                    </tbody>
+                    <tbody ng-repeat="runner in market.runners" ng-show=runner.rp.hasMatchedBacks>
+                    <tr ng-repeat="bet in runner.matchedBets" class=back-light ng-show="bet.side=='BACK'">
+                      <td class=runner-name-cell><span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center>{{bet.price}}</td>
+                      <td class=center>${{bet.size | number:2}}</td>
+                      <td class=center>${{(bet.price-1)*bet.size | number:2}}</td>
+                    </tr>
+                    </tbody>
+                    <tbody class=lay-light ng-show=market.mp.hasMatchedLays>
+                    <tr class=lay-dark>
+                      <th class="left betslip-header-cell">Lay (Bet against)</th>
+                      <th>Backer's<br>Odds</th>
+                      <th>Backer's<br>Stake</th>
+                      <th>Your<br>Liability</th>
+                    </tr>
+                    </tbody>
+                    <tbody ng-repeat="runner in market.runners" ng-show=runner.rp.hasMatchedLays>
+                    <tr ng-repeat="bet in runner.matchedBets" class=lay-light ng-show="bet.side=='LAY'">
+                      <td class=runner-name-cell><span class=runner-name>{{runner.name}}</span></td>
+                      <td class=center>{{bet.price}}</td>
+                      <td class=center>${{bet.size | number:2}}</td>
+                      <td class=center>${{(bet.price-1)*bet.size | number:2}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <span class=selection-text ng-show="!market.mp.hasMatchedBacks && !market.mp.hasMatchedLays">You have no matched bets on this market</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src=vendor/jQuery/jquery-2.1.3.min.js></script>
+  <script src=vendor/modernizr/modernizr.min.js></script>
+  <script src=vendor/angular/angular.min.js></script>
+  <script src=js/simulator.js></script>
+</div>
