@@ -1,4 +1,3 @@
-/*! Build 297 - 2015-07-22, 15:14 */
 "use strict";
 function getJson(a, b) {
   $.ajax({
@@ -30,7 +29,7 @@ function loadRaceList(a) {
   )
 }
 function loadRace(a) {
-  null  === raceList ? loadRaceList(a) : loadMarket(a)
+  null === raceList ? loadRaceList(a) : loadMarket(a)
 }
 function ListIterator(a) {
   this.ptr = -1,
@@ -453,6 +452,7 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
     )
   }
   function d() {
+    a.loading = true;
     loadRace(function(b) {
         var raceLengths = [1000, 1200, 1400, 1700, 1800, 2200, 2800], maxPoints = 400,
           divisor = maxPoints / raceLengths.length,
@@ -463,6 +463,7 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
         a.market = b,
           a.market.distance = raceLengths[Math.min(index, raceLengths.length - 1)],
           o(),
+          a.loading = false;
           a.$apply()
       }
     )
@@ -598,6 +599,7 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
     a.options = {
       layBetPayoutLiability: "liability"
     },
+    a.loading = false,
     a.$watch("market.pctRace", function(b) {
         b > 99 && (a.isEnvInMotion = !1)
       }
@@ -614,19 +616,22 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
       }
     ),
     a.isBtnPlayDisabled = function() {
-      return a.playing || h()
+      return a.loading || a.playing || h()
     }
     ,
     a.isBtnPauseDisabled = function() {
-      return !a.playing || h()
+      return a.loading || !a.playing || h()
     }
     ,
     a.isBtnSkipToStartDisabled = function() {
-      return h() || g()
+      return a.loading || h() || g()
     }
     ,
     a.isBtnSkipToEndDisabled = function() {
-      return h() || !g()
+      return a.loading || h() || !g()
+    },
+    a.isBtnNewRaceDisabled = function() {
+      return a.loading;
     }
     ,
     a.restart = function() {
@@ -636,6 +641,7 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
         a.started = !1,
         a.betslipState = "PLACE",
         a.stallPosition = 88,
+        a.loading = true,
         d()
     }
     ,

@@ -100,7 +100,7 @@ a {
 
 table {
     border: 0;
-    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 11px
 }
 
@@ -673,6 +673,7 @@ input {
 }
 
 .tto-msg {
+    margin: 2px 0px;
     color: #ffb80c
 }
 
@@ -710,6 +711,28 @@ input {
     font-weight: bold;
     text-align: center;
     z-index: 11
+}
+
+.simulator .loading-splash {
+    background-color: rgba(70, 70, 70, 0.7);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    visibility: hidden;
+    width: 100%;
+    z-index: 10;
+    -moz-opacity: 0;
+    -khtml-opacity: 0
+}
+
+.simulator .loading-splash.show {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    opacity: 1;
+    visibility: visible;
+    -moz-opacity: 1;
+    -khtml-opacity: 1;
 }
 
 .price-splash {
@@ -873,13 +896,13 @@ input {
     /*background-position: 40px 0*/
 }
 
-.nr-button, .btn-goto-start, .btn-goto-end {
+.btn-nr, .btn-goto-start, .btn-goto-end {
     height: 40px;
     line-height: 40px;
     padding: 0 11px
 }
 
-.nr-button:hover, .btn-goto-start:not([disabled]):hover, .btn-goto-end:not([disabled]):hover {
+.btn-goto-start:not([disabled]):hover, .btn-goto-end:not([disabled]):hover, .btn-nr:not([disabled]):hover {
     color: #ffb80c
 }
 
@@ -889,17 +912,7 @@ input {
 }
 
 @font-face {
-    font-family: InformaProMedium;
-    src: url(../fonts/informa/informapromedium-webfont.eot);
-    src: url(../fonts/informa/informapromedium-webfont.eot?#iefix) format(embedded-opentype), url(../fonts/informa/informapromedium-webfont.woff) format(woff), url(../fonts/informa/informapromedium-webfont.ttf) format(truetype), url(../fonts/informa/informapromedium-webfont.svg#InformaProMedium) format(svg);
-    font-weight: 400;
-    font-style: normal
-}
-
-@font-face {
-    font-family: InformaProLight;
-    src: url(../fonts/informa/informaprolight-webfont.eot);
-    src: url(../fonts/informa/informaprolight-webfont.eot?#iefix) format(embedded-opentype), url(../fonts/informa/informaprolight-webfont.woff) format(woff), url(../fonts/informa/informaprolight-webfont.ttf) format(truetype), url(../fonts/informa/informaprolight-webfont.svg#InformaProLight) format(svg);
+    font-family: Arial;
     font-weight: 400;
     font-style: normal
 }
@@ -968,6 +981,10 @@ text.axis-worktime {
     }
 }
 
+.loading {
+    display: none;
+}
+
 [ng-cloak].loading {
     min-height: 400px
 }
@@ -976,15 +993,15 @@ text.axis-worktime {
     display: inline-block !important
 }
 
-[ng-cloak].loading-image {
+.loading-image {
     animation: spinloader 2s linear infinite;
     -webkit-animation: spinloader 2s linear infinite;
-    background-image: url(../images/loading.png);
-    background-repeat: no-repeat;
+    background: url(../images/loading.png) no-repeat;
     background-size: 50px 50px;
+    background-position: 50% 50%;
     height: 50px;
     margin-top: 175px;
-    width: 50px
+    width: 100%
 }
 
 .center {
@@ -1122,7 +1139,7 @@ text.axis-worktime {
     color: #1E1E1E;
     position: absolute;
     right: 20px;
-    top: 20px
+    top: 25px
 }
 
 .simulator .distance-label {
@@ -1255,10 +1272,10 @@ text.axis-worktime {
 
 .simulator .finish-line {
     background: url(../images/finish-line.png) no-repeat;
-    height: 370px;
+    height: 410px;
     position: absolute;
     right: -20px;
-    top: 45px;
+    top: 42px;
     width: 20px;
     z-index: 4
 }
