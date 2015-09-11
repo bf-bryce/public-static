@@ -367,7 +367,7 @@ var raceList = null
       ,
       this.recalc = function() {
         var a = new Matcher;
-        a.execute(this._atb, this._atl, this.matchedBets, this.unmatchedBets, this.atb, this.atl)
+        a.execute(this._atb, this._atl, this.matchedBets, this.unmatchedBets, this.atb, this.atl);
       }
   }
   , Race = function(a) {
@@ -469,9 +469,18 @@ angular.module("betsim").controller("appCtrl", ["$scope", "$timeout", function(a
     )
   }
   function e(b) {
+    var timeoutId;
     a.playing && a.market.next(),
       n(),
     b || a.$apply(),
+      timeoutId = window.setTimeout(function() {
+        a.market.runners.forEach(function(runner) {
+          runner.atb.forEach(function(odds) { odds && delete odds.changed });
+          runner.atl.forEach(function(odds) { odds && delete odds.changed });
+        });
+        a.$apply();
+          window.clearTimeout(timeoutId);
+      }, 500),
     a.playing && window.setTimeout(e, 1e3)
   }
   function f() {
@@ -1491,9 +1500,8 @@ Matcher.prototype.canMatch = function(a, b, c) {
     });
     for (var c = 0; 3 > c; c++) {
       this.cellChanged(b[c], d[c]);
-      b[c] && (delete b[c].changed);
-      d[c] && (delete d[c].changed);
       d[c] && (d[c].changed = !b[c] || (b[c].price !== d[c].price));
+
       b[c] = d[c];
     }
   }
