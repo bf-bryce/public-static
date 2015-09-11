@@ -1234,18 +1234,18 @@ text.axis-worktime {
 }
 
 .simulator .finish-logo {
-    background: #ffb80c url("../images/logo.png") no-repeat;
+    background: #ffb80c url("../images/logo.png") repeat-x;
     height: 48px;
     position: absolute;
-    right: -115px;
+    right: -227px;
     border: solid #1e1e1e 1px;
     top: 65px;
-    width: 112px;
+    width: 225px;
     z-index: 3;
 }
 
 .simulator .finish-logo.arrive {
-    right: 5px;
+    right: 2px;
     transition: right 250ms linear;
     -moz-transition: right 250ms linear;
     -ms-transition: right 250ms linear;
@@ -1258,7 +1258,7 @@ text.axis-worktime {
     height: 370px;
     position: absolute;
     right: -20px;
-    top: 82px;
+    top: 45px;
     width: 20px;
     z-index: 4
 }
