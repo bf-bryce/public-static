@@ -104,10 +104,14 @@
                 <tr ng-repeat="runner in market.runners">
                   <td class=runner-name-cell ng-class="{'runner-name-cell-first': $index == 0}">
                     <div class=saddlecloth ng-class="'{{::'saddlecloth-' + runner.saddleCloth}}'">{{::runner.saddleCloth}}</div>
-                    <!--
-                      -->
-                    <div class=runner-name>{{runner.name}}</div>
-                    <br><span ng-show=market.mp.hasMatchedPosition pandl=runner.rp.netMatchedProfitIfWin></span> <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">»</span> <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets" pandl=runner.rp.netProfitIfWin></span>
+                    <div class="runner-info">
+                      <div class=runner-name>{{runner.name}}</div>
+                      <div class="pnl">
+                        <span ng-show=market.mp.hasMatchedPosition pandl=runner.rp.netMatchedProfitIfWin></span>
+                        <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets">»</span>
+                        <span ng-show="market.mp.hasPotentialBackBets || market.mp.hasPotentialLayBets" pandl=runner.rp.netProfitIfWin></span>
+                      </div><!--
+                    --></div>
                   </td>
                   <td class="price-cell price-cell-first peripheral-price" ng-click="back(runner, runner.atb[2].price)">
                         <span title={{runner.atb[2].fractionalPrice}} ng-mouseenter=getFractionalPrice(runner.atb[2])>

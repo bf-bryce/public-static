@@ -156,13 +156,21 @@ table.price-table .matched-header {
 
 .market-view-container .runner-name-cell {
     border-bottom: 1px solid #DFDFDF;
-    padding: 4px 0;
-    padding-right: 8px;
-    text-align: left
+    padding: 4px 8px 4px 0px;
+    text-align: left;
+    vertical-align: middle;
 }
 
 .market-view-container .runner-name-cell-first {
     border-top: 1px solid #DFDFDF
+}
+
+.market-view-container .saddlecloth {
+    vertical-align: top;
+}
+
+.market-view-container .runner-info {
+    display: inline-block;
 }
 
 .market-view-container .runner-name {
@@ -176,6 +184,10 @@ table.price-table .matched-header {
     text-overflow: ellipsis;
     vertical-align: middle;
     white-space: nowrap
+}
+
+.market-view-container .pnl {
+    padding-left: 4px;
 }
 
 .market-view-container .price-cell {
@@ -875,7 +887,7 @@ input {
     bottom: -5px;
     content: '';
     height: 0;
-    left: calc(45%);
+    left: 45%;
     position: absolute;
     width: 0
 }
