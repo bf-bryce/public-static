@@ -1489,8 +1489,13 @@ Matcher.prototype.canMatch = function(a, b, c) {
       price: e,
       size: f
     });
-    for (var c = 0; 3 > c; c++)
-      this.cellChanged(b[c], d[c]) && (b[c] = d[c])
+    for (var c = 0; 3 > c; c++) {
+      this.cellChanged(b[c], d[c]);
+      b[c] && (delete b[c].changed);
+      d[c] && (delete d[c].changed);
+      d[c] && (d[c].changed = !b[c] || (b[c].price !== d[c].price));
+      b[c] = d[c];
+    }
   }
   ,
   Matcher.prototype.cellChanged = function(a, b) {

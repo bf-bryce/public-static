@@ -205,6 +205,39 @@ table.price-table .matched-header {
     cursor: pointer
 }
 
+@keyframes highlightBack {
+    0% { background-color: #54b3ff }
+    50% { background-color: yellow; }
+    100% { background-color: #54b3ff }
+}
+
+@keyframes highlightPeripheral {
+    0% { background-color: #E3E8E8 }
+    50% { background-color: yellow; }
+    100% { background-color: #E3E8E8 }
+}
+
+@keyframes highlightLay {
+    0% { background-color: #f996ab }
+    50% { background-color: yellow; }
+    100% { background-color: #f996ab }
+}
+
+.market-view-container .price-cell.peripheral-price.changed {
+    animation-name: highlightPeripheral;
+    animation-duration: 0.3s;
+}
+
+.market-view-container .price-cell.back.changed {
+    animation-name: highlightBack;
+    animation-duration: 0.3s;
+}
+
+.market-view-container .price-cell.lay.changed {
+    animation-name: highlightLay;
+    animation-duration: 0.3s;
+}
+
 .market-view-container .price-cell-first {
     border-left: 0
 }
